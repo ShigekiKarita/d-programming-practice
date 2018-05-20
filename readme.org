@@ -4,7 +4,7 @@
 
 there are three supported test formats. here I introduce the easiest one.
 
-- input file ./atcoder/abc081/b.d
+An input file [[./atcoder/abc081/b.d]] contains inline test cases
 
 #+begin_src d
 /++TEST++
@@ -15,7 +15,7 @@ there are three supported test formats. here I introduce the easiest one.
 2
 <<<
 
-this is wrong case
+comment: this is wrong case
 >>> Q2
 4
 5 6 8 10
