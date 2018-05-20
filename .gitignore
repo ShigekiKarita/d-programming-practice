@@ -4,4 +4,7 @@
 !*.d
 !*.txt
 !*.org
+!*.test
 !.gitignore
+
+.#*

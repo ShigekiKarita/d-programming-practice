@@ -1,0 +1,94 @@
+* D-Programming-Practice
+
+** usage of ./judge.d
+
+there are three supported test formats. here I introduce the easiest one.
+
+- input file ./atcoder/abc081/b.d
+
+#+begin_src d
+/++TEST++
+>>> Q1
+3
+8 12 40
+===
+2
+<<<
+
+this is wrong case
+>>> Q2
+4
+5 6 8 10
+===
+8
+<<<
+
+>>> Q3
+6
+382253568 723152896 37802240 379425024 404894720 471526144
+===
+8
+<<<
+++TEST++/
+
+import std.stdio;
+import std.string;
+import std.conv;
+import std.algorithm;
+import std.array;
+
+int count2(int x) {
+    int ret = 0;
+    while (x % 2 == 0) {
+        ++ret;
+        x /= 2;
+    }
+    return ret;
+}
+
+void main() {
+    size_t n;
+    string s;
+    readf("%d\n%s\n", &n, &s);
+    auto c = s.split().map!(a => a.to!int.count2).reduce!min;
+    writeln(c);
+}
+#+end_src
+
+then ~$ ./judge.d ./atcoder/abc081/b.d~ results
+
+#+begin_src bash
+$ ./judge.d atcoder/abc081/b.d
+====== running b ======
+testing: C:\Users\Shigeki\AppData\Local\Temp\b.test
+- judging C:\Users\Shigeki\AppData\Local\Temp\Q1.q vs C:\Users\Shigeki\AppData\Local\Temp\Q1.a
+- passed: true
+- time: 1 sec, 99 ms, 654 μs, and 3 hnsecs
+- memory: 64 bytes
+
+---------------------
+- judging C:\Users\Shigeki\AppData\Local\Temp\Q2.q vs C:\Users\Shigeki\AppData\Local\Temp\Q2.a
+- passed: false
+> answer:
+0
+> expected:
+8
+- time: 30 ms, 842 μs, and 6 hnsecs
+- memory: 64 bytes
+
+---------------------
+- judging C:\Users\Shigeki\AppData\Local\Temp\Q3.q vs C:\Users\Shigeki\AppData\Local\Temp\Q3.a
+- passed: true
+- time: 19 ms, 621 μs, and 3 hnsecs
+- memory: 64 bytes
+#+end_src
+
+** todo
+
+- download atcoder question & answer txt automatically
+
+
+** links
+
+- atcoder https://atcoder.jp
+- atcoder problems https://kenkoooo.com/atcoder/

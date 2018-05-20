@@ -3,7 +3,7 @@ import std.stdio;
 import std.file : dirEntries, SpanMode, tempDir, readText, exists;
 import std.path : dirName, baseName, stripExtension, buildPath;
 import std.algorithm : each, filter, startsWith;
-import std.string : replace, split;
+import std.string : replace, split, strip;
 import std.conv : to;
 
 enum usage = `USAGE: rdmd judge.d ./foo/bar.d
@@ -35,29 +35,30 @@ int main(string[] args) {
         return 1;
     }
     
-    immutable codeName = args[1];
-    immutable problem = codeName.replace(".d", "");
+    immutable codePath = args[1];
+    immutable problem = codePath.replace(".d", "");
     immutable bname = problem.baseName.stripExtension;
     immutable dname = problem.dirName;
-    void check(in string qfile) {
+    void check(in string qfile, string afile="") {
         import std.process : spawnProcess, wait;
         import std.datetime.stopwatch;
-        writefln("- judging %s", qfile);
         immutable qbase = qfile.baseName;
         immutable abase = qbase.replace(".q", ".a");
-        immutable afile = dname.buildPath(abase);
+        if (afile == "") {
+            afile = dname.buildPath(abase);
+        }
+        writefln("- judging %s vs %s", qfile, afile);
         /*
           see: https://beta.atcoder.jp/contests/practice/rule
           D (DMD64 v2.070.1)	dmd -m64 -w -O -release -inline ./Main.d
           D (LDC 0.17.0)	ldc2 -O ./Main.d -of ./a.out
          */
-        auto cmd = ["rdmd", "-m64", "-profile=gc", codeName];
+        auto cmd = ["rdmd", "-m64", "-profile=gc", codePath];
         auto sout = File(tempDir.buildPath(qbase ~ ".out"), "w");
         auto serr = File(tempDir.buildPath(qbase ~ ".err"), "w");
         auto swatch = StopWatch(AutoStart.yes);
         immutable result = wait(spawnProcess(cmd, File(qfile), sout, serr));
         immutable time = swatch.peek();
-        assert(result == 0, ">>> ERROR\n" ~ serr.name.readText);
         immutable answer = sout.name.readText;
         immutable expected = afile.readText;
         immutable passed = answer == expected;
@@ -72,6 +73,7 @@ int main(string[] args) {
             writefln("- memory: %d bytes", gclog.readGcBytes);
         }
         writeln(serr.name.readText);
+        assert(result == 0, ">>> ERROR\n" ~ serr.name.readText);
         writeln("---------------------");        
     }
 
@@ -79,5 +81,56 @@ int main(string[] args) {
     dname.dirEntries(SpanMode.shallow)
         .filter!(f => f.baseName.startsWith(bname ~ ".q"))
         .each!check;
+
+
+    void checkTest(string testPath) {
+        if (!testPath.exists) return;
+        writeln("testing: ", testPath);
+        File qfile, afile;
+        bool isQ = true;
+        bool isReading = true;
+        foreach (line; File(testPath).byLine) {
+            if (line.startsWith(">>>")) {
+                auto ls = line.split();
+                auto name = ls.length == 1 ? "temp" : ls[1];
+                qfile = File(tempDir.buildPath(name ~ ".q"), "w");
+                afile = File(tempDir.buildPath(name ~ ".a"), "w");
+                isQ = true;
+                isReading = true;
+            } else if (line.startsWith("===")) {
+                isQ = false;
+            } else if (line.startsWith("<<<")) {
+                afile.close();
+                qfile.close();
+                isReading = false;
+                check(qfile.name, afile.name);
+                // TODO remove?
+            } else if (isReading) {
+                // NOTE need strip?
+                if (isQ) qfile.writeln(line.strip);
+                else afile.writeln(line.strip);
+            }
+        }
+    }
+
+    File testFile;
+    foreach (line; File(codePath).byLine) {
+        if (line.startsWith("/++TEST++")) {
+            testFile = File(tempDir.buildPath(bname ~ ".test"), "w");
+        } else if (testFile.isOpen) {
+            if (line.startsWith("++TEST++/")) {
+                testFile.close();
+            } else {
+                testFile.writeln(line.strip);
+            }
+        }
+    }
+    checkTest(testFile.name);
+    
+    immutable tpath = dname.buildPath(bname ~ ".test");
+    checkTest(tpath);
+
+    
+    
     return 0;
 }
