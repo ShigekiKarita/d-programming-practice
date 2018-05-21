@@ -1,4 +1,4 @@
-#!rdmd
+#!/usr/bin/env rdmd
 import std.stdio;
 import std.file : dirEntries, SpanMode, tempDir, readText, exists;
 import std.path : dirName, baseName, stripExtension, buildPath;
@@ -14,6 +14,8 @@ NOTE: you must have question & answer txt like
 ./foo/bar.q2 ./foo/bar.a2
 ...
 `;
+
+bool allPass = true;
 
 size_t readGcBytes(string path) {
     size_t ret = 0;
@@ -34,7 +36,7 @@ int main(string[] args) {
         writeln(usage);
         return 1;
     }
-    
+
     immutable codePath = args[1];
     immutable problem = codePath.replace(".d", "");
     immutable bname = problem.baseName.stripExtension;
@@ -53,7 +55,7 @@ int main(string[] args) {
           D (DMD64 v2.070.1)	dmd -m64 -w -O -release -inline ./Main.d
           D (LDC 0.17.0)	ldc2 -O ./Main.d -of ./a.out
          */
-        auto cmd = ["rdmd", "-m64", "-profile=gc", codePath];
+        auto cmd = ["rdmd", "-g", "-m64", "-w", "-profile=gc", codePath];
         auto sout = File(tempDir.buildPath(qbase ~ ".out"), "w");
         auto serr = File(tempDir.buildPath(qbase ~ ".err"), "w");
         auto swatch = StopWatch(AutoStart.yes);
@@ -64,6 +66,7 @@ int main(string[] args) {
         immutable passed = answer == expected;
         writefln("- passed: %s", passed);
         if (!passed) {
+            allPass = false;
             write("> answer:\n", answer);
             write("> expected:\n", expected);
         }
@@ -74,7 +77,7 @@ int main(string[] args) {
         }
         writeln(serr.name.readText);
         assert(result == 0, ">>> ERROR\n" ~ serr.name.readText);
-        writeln("---------------------");        
+        writeln("---------------------");
     }
 
     writefln("====== running %s ======", bname);
@@ -88,7 +91,7 @@ int main(string[] args) {
         writeln("testing: ", testPath);
         File qfile, afile;
         bool isQ = true;
-        bool isReading = true;
+        bool isReading = false;
         foreach (line; File(testPath).byLine) {
             if (line.startsWith(">>>")) {
                 auto ls = line.split();
@@ -126,11 +129,9 @@ int main(string[] args) {
         }
     }
     checkTest(testFile.name);
-    
+
     immutable tpath = dname.buildPath(bname ~ ".test");
     checkTest(tpath);
 
-    
-    
-    return 0;
+    return allPass ? 0 : 1;
 }
