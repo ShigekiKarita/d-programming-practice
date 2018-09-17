@@ -7,7 +7,7 @@ This repository provides two experimental tools (judge.d, gen.d) for atcoder con
 
 ** usage of ./gen.d
 
-For example, ~./gen.d -c abc089~ generates template codes with test header ~A.d, B.d, C.d, D.d~ in ~atcoder/abc089~ by parsing atcoder task pages.
+For example, ~./gen.d abc089~ generates template codes with test header ~A.d, B.d, C.d, D.d~ in ~atcoder/abc089~ by parsing atcoder task pages.
 
 
 
