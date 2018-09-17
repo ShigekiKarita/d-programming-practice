@@ -1,5 +1,16 @@
 * D-Programming-Practice
 
+This repository provides two experimental tools (judge.d, gen.d) for atcoder contest.
+
+- ~gen.d~: generate test headers from the contest name (e.g., ~./gen.d abc089~) 
+- ~judge.d~: test input/output strings in a header of a source code (e.g., ~./judge.d ./atcoder/abc089/A.d~
+
+** usage of ./gen.d
+
+For example, ~./gen.d -c abc089~ generates template codes with test header ~A.d, B.d, C.d, D.d~ in ~atcoder/abc089~ by parsing atcoder task pages.
+
+
+
 ** usage of ./judge.d
 
 there are three supported test formats. here I introduce the easiest one.
@@ -82,10 +93,6 @@ testing: C:\Users\Shigeki\AppData\Local\Temp\b.test
 - time: 19 ms, 621 μs, and 3 hnsecs
 - memory: 64 bytes
 #+end_src
-
-** todo
-
-- download atcoder question & answer txt automatically
 
 
 ** links
