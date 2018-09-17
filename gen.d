@@ -129,10 +129,6 @@ int main(string[] args) {
     }
 
     auto dstdir = root ~ "/" ~ contest;
-    if (dstdir.exists) {
-        stderr.writeln("Error: " ~ dstdir ~ " already exists.");
-        return 1;
-    }
     */
 
     if (args.length != 2) {
@@ -142,6 +138,12 @@ int main(string[] args) {
 
     auto contest = args[1];
     auto dstdir = "atcoder/" ~ contest;
+
+    if (dstdir.exists) {
+        stderr.writeln("Error: " ~ dstdir ~ " already exists.");
+        return 1;
+    }
+
     mkdirRecurse(dstdir);
     Problem(contest).generateFiles(dstdir);
     return 0;
