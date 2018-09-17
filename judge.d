@@ -64,7 +64,8 @@ int main(string[] args) {
         immutable answer = sout.name.readText;
         immutable expected = afile.readText;
         immutable passed = answer == expected;
-        writefln("- passed: %s", passed);
+        immutable color = passed ? 2 : 1; // green or red
+        writefln!"- \x1b[1m\x1b[3%smresult: %s\x1b[m"(color, passed ? "AC" : "WA");
         if (!passed) {
             allPass = false;
             write("> answer:\n", answer);
