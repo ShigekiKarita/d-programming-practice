@@ -11,7 +11,6 @@ struct Example {
 
 string between(string pre, string post)(string s) {
     import std.string;
-    import std.format : formattedRead;
     return s.split(pre)[1].split(post)[0];
 }
 
@@ -29,15 +28,25 @@ struct Problem {
     enum templateString = q{
 import std.stdio, std.algorithm, std.range, std.format, std.numeric, std.string, std.conv, std.array;
 
-auto readArray(T=int)(string s) {
-    return s.split.map!(to!T).array;
+auto readLine(T=int)() {
+    return readln().split.map!(to!T).array;
+}
+
+auto readLines(T=int)() {
+    size_t n;
+    readf("%d\n", &n);
+    auto ret = new string[n];
+    foreach (i; 0 .. n) {
+        ret[i] = readln().to!T;
+    }
+    return ret;
 }
 
 void main() {
     int a, b;
     readf("%d %d\n", &a, &b);
 }
-    };
+};
 
     void registerUrl(string s) {
         const key = s.between!("'>", "</a>");
@@ -62,8 +71,6 @@ void main() {
             auto pres =  ex.split("<pre>");
             auto i = pres[1].split("</pre>")[0].strip;
             auto o = pres[2].split("</pre>")[0].strip;
-            // writeln(i, "\n----");
-            // writeln(o, "\n=====");
             ret ~= Example(i, o);
         }
         return ret;
@@ -80,11 +87,10 @@ void main() {
         foreach (k, v; this.url) {
             this.example[k] = this.parseExamples(v);
         }
-        // this.parseExamples(this.url["B"]); //.writeln;
     }
 
     auto generateTests(string key) {
-        string ret = "/++TEST++\n";
+        string ret = format!"/++TEST++\n\n%s\n"(this.url[key]);
         foreach (i, ex; this.example[key]) {
             ret ~= format!"\n>>> Q%d\n"(i);
             ret ~= ex.input;
@@ -105,32 +111,7 @@ void main() {
 }
 
 int main(string[] args) {
-    import std.getopt;
     import std.path;
-
-    /*
-    string contest;
-    string root = "atcoder";
-    auto opt = getopt(
-        args,
-        // config.required,
-        "contest|c", &contest,
-        "root|r", &root);
-
-    if (contest.empty) {
-        stderr.writeln("Error: at least one argument [contest] is required");
-    }
-
-    if (contest.empty || opt.helpWanted) {
-        defaultGetoptPrinter(
-            args[0].baseName ~ ": initial snippet generator [contest] ([root])",
-            opt.options);
-        return contest.empty ? 1 : 0;
-    }
-
-    auto dstdir = root ~ "/" ~ contest;
-    */
-
     if (args.length != 2) {
         stderr.writefln!"invalid arg length: %s.length != 2"(args);
         return 1;

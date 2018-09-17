@@ -1,5 +1,7 @@
 /++TEST++
 
+https://beta.atcoder.jp/contests/abc089/tasks/abc089_a
+
 >>> Q0
 8
 ===
@@ -20,14 +22,10 @@
 
 ++TEST++/
 
-import std.stdio, std.algorithm, std.range, std.format, std.numeric, std.string, std.conv, std.array;
-
-auto readArray(T=int)(string s) {
-    return s.split.map!(to!T).array;
-}
+import std.stdio;
 
 void main() {
-    int a, b;
-    readf("%d %d\n", &a, &b);
+    int n;
+    readf("%d\n", &n);
+    writeln(n / 3);
 }
-    

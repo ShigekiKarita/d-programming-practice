@@ -1,5 +1,7 @@
 /++TEST++
 
+https://beta.atcoder.jp/contests/abc089/tasks/abc089_b
+
 >>> Q0
 6
 G W Y P Y W
@@ -25,12 +27,8 @@ Four
 
 import std.stdio, std.algorithm, std.range, std.format, std.numeric, std.string, std.conv, std.array;
 
-auto readArray(T=int)(string s) {
-    return s.split.map!(to!T).array;
-}
-
 void main() {
-    int a, b;
-    readf("%d %d\n", &a, &b);
+    int n;
+    readf("%d\n", &n);
+    writeln(readln().canFind("Y") ? "Four" : "Three");
 }
-    

@@ -1,5 +1,7 @@
 /++TEST++
 
+https://beta.atcoder.jp/contests/abc089/tasks/abc089_d
+
 >>> Q0
 3 3 2
 1 4 3
@@ -46,12 +48,29 @@
 
 import std.stdio, std.algorithm, std.range, std.format, std.numeric, std.string, std.conv, std.array;
 
-auto readArray(T=int)(string s) {
-    return s.split.map!(to!T).array;
+auto readLine(T=int)() {
+    return readln.split.map!(to!T);
 }
 
 void main() {
-    int a, b;
-    readf("%d %d\n", &a, &b);
+    int h, w, d;
+    readf("%d %d %d\n", &h, &w, &d);
+    int[300][300] _a;
+    auto sa = _a[0..h][0..w];
+    foreach (i; 0 .. h) {
+        foreach (j, a; readLine.enumerate) {
+            // writeln(j);
+            sa[i][j] = a;
+        }
+    }
+    writeln(sa);
+    int q;
+    readf("%d\n", q);
+    int[10000] _l, _r;
+    auto sl = _l[0..q];
+    auto sr = _r[0..q];
+    foreach (i; 0 .. q) {
+        readf("%d %d\n", &sl[i], &sr[i]);
+    }
 }
-    
+
